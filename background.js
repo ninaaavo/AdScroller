@@ -29,7 +29,7 @@ chrome.action.onClicked.addListener((tab) => {
     files: ["content.js"],
   });
 });
-
+//hello
 // monitoring if someone is change tabs
 chrome.tabs.onActivated.addListener((activeInfo) => {
   chrome.scripting.executeScript({
