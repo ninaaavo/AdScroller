@@ -17,27 +17,26 @@ function looksLikeAd(elem) {
   // 1. Iframe + check adDomains (from famous ad domains) -> very likely ad (+ 3pts)
   // 2. Inner text saying ad related keywords -> very likely ads
   // HOWEVER! there could be cases when the text contain those words but not is actually an ad => length bound?
+  // 3. aria-label for accessibility, usually - USUALLY - would tell straight up if it is advertisement.
 
   // -------------------------------------
 
   // -------------------------------------
-  // Setting up vars
+  // SETTING UP VARS
   // -------------------------------------
 
   if (!(elem instanceof Element)) return false;
 
-  const idClass = `${elem.id} ${elem.className}`.toLowerCase(); // pair up id + class
   const text = (elem.textContent || "").toLowerCase();
   const aria = (elem.getAttribute("aria-label") || "").toLowerCase();
-  const dataTest = (elem.getAttribute("data-testid") || "").toLowerCase();
 
-  let score = 0;
+  // let score = 0;
 
   // check if the elem contains a word in lst
   let checkContains = (el, lst) => lst.some((e) => el.includes(e));
 
   // -------------------------------------
-  // 1. iframe with known ad sources
+  // SETTING UP WORD LISTS
   // -------------------------------------
   const adDomains = [
     "doubleclick",
@@ -47,17 +46,6 @@ function looksLikeAd(elem) {
     "outbrain",
     "celtra",
   ];
-
-  if (elem.tagName === "IFRAME") {
-    const src = (elem.src || "").toLowerCase();
-    if (checkContains(src, adDomains)) {
-      score += 3;
-    }
-  }
-
-  // -------------------------------------
-  // 2. text has ads keywords
-  // -------------------------------------
   const adKeywords = [
     "sponsored",
     "advertisement",
@@ -66,28 +54,6 @@ function looksLikeAd(elem) {
     "adchoices",
   ];
 
-  if (checkContains(text, adKeywords) && text.length < 40) {
-    score += 3;
-  }
-
-  // class/id hints (safer)
-  const adHints = [
-    "ad-",
-    "-ad",
-    "ads",
-    "adsbygoogle",
-    "sponsor",
-    "sponsored",
-    "promo",
-    "banner",
-    "advert",
-  ];
-
-  if (checkContains(idClass, adHints)) {
-    score += 1;
-  }
-
-  // aria / test id
   const ariaHints = [
     "advertisement",
     "sponsored",
@@ -96,22 +62,37 @@ function looksLikeAd(elem) {
     "promotion",
   ];
 
-  if (checkContains(aria, ariaHints)) {
-    score += 2;
+  // -------------------------------------
+  // Checking vars against list
+  // -------------------------------------
+
+  if (elem.tagName === "IFRAME") {
+    const src = (elem.src || "").toLowerCase();
+    if (checkContains(src, adDomains)) {
+      return true;
+    }
   }
 
-  return score >= 2;
+  if (checkContains(text, adKeywords) && text.length < 40) {
+    return true;
+  }
+
+  if (checkContains(aria, ariaHints)) {
+    return true;
+  }
+
+  return false
 }
 
 function highlightAds() {
+  console.log("reloading :>")
   const elements = document.querySelectorAll(
-    "div, aside, section, iframe, ins, a[aria-label], a[href]"
+    "div, aside, section, iframe, ins, a[aria-label], a[href]",
   );
 
   elements.forEach((el) => {
     if (looksLikeAd(el) && isVisible(el)) {
-      const box =
-        el.closest("article, div, section, aside") || el;
+      const box = el.closest("article, div, section, aside") || el;
 
       box.style.outline = "3px solid red";
     }
@@ -121,3 +102,4 @@ function highlightAds() {
 // run once + keep updating
 highlightAds();
 setInterval(highlightAds, 3000);
+
