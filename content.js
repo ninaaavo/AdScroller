@@ -10,6 +10,11 @@ function isVisible(el) {
   );
 }
 
+function makeRegex(lst){
+  // make regular expression for lst, help identify word on its own
+  return new RegExp(`\\b(${lst.join("|")})\\b`, "i")
+}
+
 function looksLikeAd(elem) {
   // -------------------------------------
 
@@ -29,11 +34,14 @@ function looksLikeAd(elem) {
 
   const text = (elem.textContent || "").toLowerCase();
   const aria = (elem.getAttribute("aria-label") || "").toLowerCase();
+  const title = (elem.getAttribute("title") || "").toLowerCase();
+  const name = (elem.getAttribute("name") || "").toLowerCase();
+  const idClass = `${elem.id} ${elem.className}`.toLowerCase();
 
   // let score = 0;
 
   // check if the elem contains a word in lst
-  let checkContains = (el, lst) => lst.some((e) => el.includes(e));
+  // let checkContains = (el, lst) => lst.some((e) => el.includes(e));
 
   // -------------------------------------
   // SETTING UP WORD LISTS
@@ -46,21 +54,22 @@ function looksLikeAd(elem) {
     "outbrain",
     "celtra",
   ];
+  
   const adKeywords = [
     "sponsored",
     "advertisement",
     "ad feedback",
     "promoted",
     "adchoices",
-  ];
-
-  const ariaHints = [
-    "advertisement",
-    "sponsored",
-    "promoted",
-    "adchoices",
+    "ad content",
     "promotion",
+    "ad",
+    "ad-slot",
+    "adcontainer",
+    "banner-ad",
   ];
+  const domainRegex = makeRegex(adDomains)
+  const keywordRegex = makeRegex(adKeywords)
 
   // -------------------------------------
   // Checking vars against list
@@ -68,18 +77,14 @@ function looksLikeAd(elem) {
 
   if (elem.tagName === "IFRAME") {
     const src = (elem.src || "").toLowerCase();
-    if (checkContains(src, adDomains)) {
-      return true;
-    }
+    if (domainRegex.test(src)) return true;
   }
-
-  if (checkContains(text, adKeywords) && text.length < 40) {
-    return true;
-  }
-
-  if (checkContains(aria, ariaHints)) {
-    return true;
-  }
+  
+  if (keywordRegex.test(title)) return true;
+  if (keywordRegex.test(name)) return true;
+  if (keywordRegex.test(idClass)) return true;
+  if (keywordRegex.test(text) && text.length < 40) return true;
+  if (keywordRegex.test(aria)) return true;
 
   return false
 }
@@ -87,7 +92,21 @@ function looksLikeAd(elem) {
 function highlightAds() {
   console.log("reloading :>")
   const elements = document.querySelectorAll(
-    "div, aside, section, iframe, ins, a[aria-label], a[href]",
+    "div, aside, section, iframe, ins, a[aria-label], a[href], span",
+  );
+
+  elements.forEach((el) => {
+    if (looksLikeAd(el) && isVisible(el)) {
+      const box = el.closest("article, div, section, aside") || el;
+
+      box.style.outline = "3px solid red";
+    }
+  });
+}
+
+function scrollUpAds(){
+  const elements = document.querySelectorAll(
+    "div, aside, section, iframe, ins, a[aria-label], a[href], span",
   );
 
   elements.forEach((el) => {
@@ -100,6 +119,6 @@ function highlightAds() {
 }
 
 // run once + keep updating
-highlightAds();
-setInterval(highlightAds, 3000);
+scrollUpAds();
+setInterval(scrollUpAds, 3000);
 
