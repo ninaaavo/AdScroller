@@ -43,8 +43,8 @@ function isVisible(elem) {
   return (
     style.display !== "none" &&
     style.visibility !== "hidden" &&
-    rect.width > 50 &&
-    rect.height > 30 
+    rect.width > 0 &&
+    rect.height > 0 
   );
 }
 
@@ -130,16 +130,16 @@ let autoScrollFrame = null;
 function isChosenAdActive() {
   // check if the chosen ad is still active (in case the website swap ads)
   // cnn: ad got push to the end of page when swapped out
-
+  // console.log("check active")
   if (!chosenAd) return false;
-  if (!document.body.contains(chosenAd)) return false;
+  // if (!document.body.contains(chosenAd)) return false;
 
-  const rect = chosenAd.getBoundingClientRect();
+  // const rect = chosenAd.getBoundingClientRect();
 
   if (!isVisible(chosenAd)) return false;
 
-  if (rect.top >= window.innerHeight) return false;
-
+  // if (rect.top >= window.innerHeight) return false;
+  // console.log('its is')
   return true;
 }
 
@@ -156,43 +156,25 @@ function forceScrollTowardChosenAd() {
     return;
   }
 
+  // calculating distance
+
   const rect = chosenAd.getBoundingClientRect();
-  const currentY = window.scrollY;
+  const currentY = window.scrollY; // current position of window from top of page
 
-  // If chosen ad becomes detached or invalid, release it
-  if (!document.body.contains(chosenAd) || rect.height <= 0) {
-    chosenAd = null;
-    stopForceScroll();
-    return;
-  }
+  const adTopOnPage = currentY + rect.top; // position of ad from top of page
+  const offset = window.innerHeight * 0.2; // leave a little space from top of ad to top of page
+  const targetY = adTopOnPage - offset;
 
-  // If the chosen ad somehow ends up far below us, do NOT chase it downward
-  if (rect.top > window.innerHeight) {
-    chosenAd = null;
-    stopForceScroll();
-    return;
-  }
+  const distance = Math.max(currentY - targetY, 0); // clamp to never scroll downwards
 
-  const adTopOnPage = currentY + rect.top;
-  const targetY = adTopOnPage - window.innerHeight * 0.2;
-
-  let remaining = targetY - currentY;
-
-  // Critical fix: never scroll downward
-  if (remaining > 0) {
-    remaining = 0;
-  }
-
-  const distance = Math.abs(remaining);
+  // scrolling logic 
 
   if (distance > 2) {
-    const adHeightFactor = Math.min(rect.height / window.innerHeight, 2);
-    const tallAdPenalty = 1 / adHeightFactor;
 
     let baseStep = Math.min(18, Math.max(4, distance * 0.08));
 
     let randomBoost = 0.7 + Math.random() * 0.8;
-    let step = baseStep * randomBoost * tallAdPenalty;
+    let step = baseStep * randomBoost;
 
     if (Math.random() < 0.18) step *= 0.2;
     if (Math.random() < 0.08) step *= 1.6;
