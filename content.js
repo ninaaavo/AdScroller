@@ -136,7 +136,7 @@ function looksLikeAd(elem) {
 // --------------------------
 
 function addStyle() {
-  return; // uncomment this for effect, it's here for the sake of my eyes
+  // return; // uncomment this for effect, it's here for the sake of my eyes
   if (document.getElementById("ad-effect-styles")) return;
 
   const style = document.createElement("style");
