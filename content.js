@@ -40,25 +40,21 @@ const textBoxDuration = 3* 1000;
 // ------------------------------
 
 const newAdMessages = [
-  "Oh, I found something that might suit you. Try this.",
-  "Wait, this one feels more like you. Take a look.",
-  "I prepared this with your preferences in mind.",
-  "Here, this should be more relevant to your taste.",
-  "I think this ad understands you a little better.",
-  "I noticed this and thought you might want it.",
-  "This one seems promising. Please don't miss it.",
-  "I picked something new for you. Give it a moment.",
+  "This ad really match your profile, don't scroll away!",
+  "Look at this, I worked really hard to fetch it to you.",
+  "Please take a look, this would definitely change your life!",
+  "Hey!! I know you, you would love this!",
+  "Check this out, don't go away just yet.",
+  "Pleaseee, I'm really trying to get to know you, can you just look at my selection?",
+  "Oh wait, THIS! You would love this!"
 ];
 
 const giveUpMessages = [
-  "Alright. I must have misread your preference. I'll learn from this.",
-  "I understand. This one wasn't for you. I'll adjust.",
-  "Okay. I'll revisit your profile and try to do better next time.",
-  "You can go. I'll update what I think you want.",
-  "I see. My prediction was off. I'll refine it.",
-  "That's alright. I'll study your behavior and improve.",
-  "You win this time. I'll come back with something better suited to you.",
-  "Understood. I need to relearn what appeals to you.",
+  "Sorry I wasn't good enough for you. But don't worry, I just got it noted down.",
+  "Fine, do what you want, I'll be back with better stuff.",
+  "Not what you like huh? Let me revise your profile.",
+  "I'm sorry you hated that. I will fetch you something better.",
+  "I tried, but I will not give up! Profile updated."
 ];
 
 
