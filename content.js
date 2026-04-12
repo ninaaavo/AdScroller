@@ -140,6 +140,7 @@ function looksLikeAd(elem) {
 // --------------------------
 
 function addStyle() {
+  return; // uncomment this for effect, it's here for the sake of my eyes
   if (document.getElementById("ad-effect-styles")) return;
 
   const style = document.createElement("style");
@@ -178,6 +179,7 @@ function addStyle() {
 
   document.head.appendChild(style);
 }
+
 function highlightAds() {
   addStyle();
 
@@ -386,7 +388,16 @@ function speakNewAdFound() {
   showSystemText(getRandomMessage(newAdMessages));
 }
 
+let lastAdLockEndedTime = 0;
+const messageCooldown = 3000; // 3 seconds
+
 function speakAdLockEnded() {
+  const now = Date.now();
+
+  if (now - lastAdLockEndedTime < messageCooldown) return;
+
+  lastAdLockEndedTime = now;
+
   showSystemText(getRandomMessage(giveUpMessages));
 }
 
